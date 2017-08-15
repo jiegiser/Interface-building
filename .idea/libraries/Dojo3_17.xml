@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="Dojo3.17" type="javaScript">
+    <properties>
+      <option name="frameworkName" value="Dojo" />
+      <sourceFilesUrls>
+        <item url="file://E:/学习资料/arcgis API for javascript1/arcgis_js_api/library/3.17/3.17/init.js" />
+      </sourceFilesUrls>
+    </properties>
+    <CLASSES>
+      <root url="file://E:/学习资料/arcgis API for javascript1/arcgis_js_api/library/3.17/3.17/init.js" />
+    </CLASSES>
+    <SOURCES />
+  </library>
+</component>
