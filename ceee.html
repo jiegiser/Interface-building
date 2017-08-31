@@ -1,0 +1,367 @@
+
+<html>
+
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,minimal-ui">
+    <title>地图</title>
+    <script>
+        //     var basePath = window.location.origin +"/uri/";
+        // var basePath = window.location.protocol +"//" + window.location.hostname +":" + window.location.port +
+        //    "/uri/";
+        // var head = document.getElementsByTagName('head')[0];
+        // var base = document.createElement('base');
+        // base.href = basePath;
+        //head.appendChild(base);
+        /* alert(basePath);  */
+        var level = 13;
+        if (window.ActiveXObject) {
+            var ua = navigator.userAgent.toLowerCase();
+            var ie = ua.match(/msie ([\d.]+)/)[1]
+            if (ie == 6.0 || ie == 7.0) {
+                alert("您的浏览器版本过低，在本系统中不能达到良好的视觉效果，建议你升级到ie8以上！如果是360浏览器请切换到极速模式！");
+            }
+        }
+
+        var CONFIG = {
+            // rootUrl: "http://localhost/gis9/",
+            // rootUrl: "http://localhost:59634/",
+            rootUrl: "http://www.gis9.com/",
+            // esriUrl: "http://localhost/arcgis3.2/library/3.20/3.20/",
+            esriUrl: "https://js.arcgis.com/3.20/",
+            jsUrl: "../js/",
+            jsonUrl: "../js/gmid_min/",
+            gmidLoc: "gmid_min",
+            arcgisLoc: "arcgis3.2_min"
+        };
+    </script>
+
+    <!--【方案1】-->
+    <script src="../js/vue2.2.6/vue.js"></script>
+    <script src="../js/elem/index.js"></script>
+    <!--<script src="../js/jq/jquery-3.2.1.min.js"></script>-->
+    <script type="text/javascript" src="../js/FileSaver.js" charset="utf-8"></script>
+
+    <!--配置：ArcGIS，dojo-->
+    <script src="../js/gmid_min/configdojo32.js"></script>
+    <!--ArcGISJS本地资源-->
+    <!--<link rel="stylesheet" href="http://localhost/arcgis3.2/library/3.20/3.20/esri/css/esri.css">
+    <link rel="stylesheet" href="http://localhost/arcgis3.2/library/3.20/3.20/dijit/themes/nihilo/nihilo.css">
+    <script src="http://localhost/arcgis3.2/library/3.20/3.20/init.js"></script>-->
+
+    <link rel="stylesheet" href="https://js.arcgis.com/3.20/dijit/themes/nihilo/nihilo.css">
+    <link rel="stylesheet" href="https://js.arcgis.com/3.20/esri/css/esri.css">
+    <script src="https://js.arcgis.com/3.20/"></script>
+
+    <!--ArcGISJS在线资源-->
+    <!--<link rel="stylesheet" href="http://js.arcgis.com/4.3/esri/css/main.css">
+    <script src="http://js.arcgis.com/4.3/"></script>-->
+    <!------------->
+    <!--百度地图-->
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=6ce11cb3d4ea81b2bb31862aca2a86b1"></script>
+    <script type="text/javascript" src="../js/bd/citylist.js"></script>
+
+    <!--QQ登陆-->
+    <script type="text/javascript" src="http://qzonestyle.gtimg.cn/qzone/openapi/qc_loader.js" charset="utf-8"></script>
+    <!--easyui样式-->
+    <!--<link rel="stylesheet" type="text/css" href="../js/easyui/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="../js/easyui/themes/icon.css">-->
+    <!-- 引入样式 -->
+    <!--<link rel="stylesheet" href="http://unpkg.com/element-ui/lib/theme-default/index.css">-->
+    <link rel="stylesheet" href="../js/elem/index.css">
+
+    <!-- 先引入 Vue -->
+    <!--<script src="https://unpkg.com/vue/dist/vue.js"></script>-->
+    <!-- 引入组件库 -->
+    <!--<script src="https://unpkg.com/element-ui/lib/index.js"></script>-->
+
+    <!--【方案2】OpenLayers，requireJS-->
+    <!--OOLL-->
+    <!--<link rel="stylesheet" href="../css/ol.css" type="text/css">
+    <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,URL"></script>
+    <script src="http://openlayers.org/en/v4.0.1/build/ol.js"></script>
+    <script data-main="../js/gmid/config" src="../js/require.js"></script>-->
+    <link rel="stylesheet" href="css/map.css" type="text/css">
+    <!--<link type="text/css" rel="stylesheet" href="../css/bootstrap.min.css"-->
+    <!--<link type="text/css" rel="stylesheet" href="css/main.css" />-->
+    <!-- The line below is only needed for old environments like Internet Explorer and Android 4.x -->
+    <!--<script type="text/javascript" src="js/citys.js"></script>-->
+    <!--<script language="javascript" src="http://webapi.amap.com/maps?v=1.3&key=dbe9897915a0c1c3dd70d54f0c7d75d9"></script>-->
+
+
+    <script>
+        //debugger;
+        function onload(){
+            require(['jq', 'vue', 'elm'], function(jq, Vue, el) {
+                //debugger;
+                Vue.use(ELEMENT);
+                require(['mainmap'], function(main) {
+                    // Vue.use(ELEMENT);
+                    //debugger;
+                    //console.log(main);
+                });
+            });
+        }
+    </script>
+
+</head>
+
+<body onload="onload();">
+<!--工具条-->
+<div class="left-panel" style="height: 875px;" id="main_tools" v-cloak>
+    <div class="searchbox">
+        <!--<o-login></o-login>-->
+        <el-popover ref="ologin" placement="bottom" width="300" trigger="click">
+            <div id='frmlogin' class="grid-content bg-purple"></div>
+            <!--<o-login></o-login>-->
+        </el-popover>
+        <!--<el-tooltip content="登录" effect="light">-->
+        <el-button v-show="vData.btnCollapse.isCollapse" v-popover:ologin v-bind:class="vData.btnLogin.class">
+            <!--<div style="background: url('pic/userlogo2.png') 50% no-repeat;"></div>-->
+        </el-button>
+        <!--</el-tooltip>-->
+        <el-button type="text" style="display: none;">
+            <span id="qqLoginBtn"></span>
+            <!--<img src="../images/qq_login.png" onclick="tologin();" />-->
+        </el-button>
+        <!--收起按钮-->
+        <el-button type="primary" :icon="vData.btnCollapse.icon" v-on:click="btnCollapseClick();">{{vData.btnCollapse.text}}</el-button>
+        <el-button-group>
+            <!--<el-button type="primary" :icon="vData.btnNaviPan.icon" v-show="vData.btnCollapse.isCollapse" v-on:click="btnNaviPanClick();"></el-button>-->
+            <el-tooltip content="前一视图" effect="dark">
+                <el-button type="primary" :icon="vData.btnPreView.icon" v-show="vData.btnCollapse.isCollapse" v-on:click="btnPreViewClick();" :disabled="!vData.btnPreView.enable"></el-button>
+            </el-tooltip>
+            <el-tooltip content="后一视图" effect="dark">
+                <el-button type="primary" icon="arrow-right" v-show="vData.btnCollapse.isCollapse" v-on:click="btnNextViewClick();" :disabled="!vData.btnNextView.enable"></el-button>
+            </el-tooltip>
+            <el-tooltip content="切换地图" effect="dark">
+                <el-button type="primary" :icon="vData.btnMapType.icon" v-show="vData.btnCollapse.isCollapse" v-on:click="btnMapTypeClick();"></el-button>
+            </el-tooltip>
+
+            <div id='panLocate' class=""></div>
+
+            <!--<el-tooltip content="截图" effect="light">
+                <el-button type="primary" icon="document" v-show="vData.btnCollapse.isCollapse" v-on:click="btnSavePicClick();"></el-button>
+            </el-tooltip>-->
+        </el-button-group>
+        <el-button-group>
+            <el-tooltip content="标绘图形" effect="dark">
+                <el-button type="primary" :icon="vData.btnStartDraw.icon" v-show="vData.btnCollapse.isCollapse" v-on:click="btnStartDrawClick();"></el-button>
+            </el-tooltip>
+            <!--<el-button type="primary" :loading='vData.btnSaveDraw.saving'  icon="upload2" class="el-icon--right" v-show="vData.btnCollapse.isCollapse && vData.btnSaveDraw.visibility" v-on:click="btnSaveDrawClick();">保存</el-button>-->
+            <!--</el-button-group>-->
+
+            <!--下载功能-->
+            <!--<el-button-group>-->
+            <el-popover ref="pop_task" placement="bottom" width="450" height="300" trigger="click">
+                <div id='frmtask' class="grid-content bg-purple"></div>
+                <!--<o-login></o-login>-->
+            </el-popover>
+            <el-tooltip content="下载卫片" effect="dark">
+                <el-button type="primary" :icon="vData.btnCreateTask.icon" v-show="vData.btnCollapse.isCollapse" v-on:click="btnCreateTaskClick();" v-popover:pop_task></el-button>
+            </el-tooltip>
+
+            <!--<el-tooltip content="" effect="light">
+                <el-button type="primary" icon="document" v-show="vData.btnCollapse.isCollapse" v-on:click="btnSavePicClick();"></el-button>
+            </el-tooltip>-->
+        </el-button-group>
+
+        <!--<el-button-group>
+        <el-dropdown split-button type="primary" @click="">
+            更多
+            <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item>黄金糕</el-dropdown-item>
+                <el-dropdown-item>狮子头</el-dropdown-item>
+                <el-dropdown-item>螺蛳粉</el-dropdown-item>
+                <el-dropdown-item>双皮奶</el-dropdown-item>
+                <el-dropdown-item>蚵仔煎</el-dropdown-item>
+            </el-dropdown-menu>
+        </el-dropdown>
+        </el-button-group>-->
+
+        <!--<el-button type="primary" icon="delete"></el-button> -->
+        <el-button-group>
+            <!--城市搜索-->
+            <div id='searchcity'></div>
+        </el-button-group>
+
+
+        <!--<button class="search-button" id="searchDiv" onclick="doSearch();" title="搜索" data-tooltip="2"></button>-->
+    </div>
+</div>
+<!-- 编辑工具面板 -->
+<div class="map-editpanel" style="display: none;" v-show="vData.tabPanel.visibility" id="main_edit" v-cloak>
+    <div class="panel-headerbtn">
+        <el-button type="text" size="mini" icon="close" class="panel-close" v-on:click="btnCloseEditPanel();">
+        </el-button>
+    </div>
+    <div class="panel-edittab">
+        <el-tabs v-model="vData.tabPanel.activeName" @tab-click="handleClick">
+            <!--点样式设置-->
+            <el-tab-pane label="编辑" name="first">
+                <div id='frmpoint' class="grid-content bg-purple"> </div>
+            </el-tab-pane>
+        </el-tabs>
+    </div>
+</div>
+<!--地图切换面板-->
+<div class="map-editpanel" style="display: none;" v-show="vData.tabPanel.visibility" id="main_maptype" v-cloak>
+    <div class="panel-headerbtn">
+        <el-button type="text" size="mini" icon="close" class="panel-close" v-on:click="btnClosePanelClick();">
+        </el-button>
+    </div>
+    <div class="panel-edittab">
+        <el-tabs v-model="vData.tabPanel.activeName" @tab-click="handleClick">
+            <el-tab-pane label="图层" name="first">
+                <div id='frmtoc'> </div>
+            </el-tab-pane>
+
+            <el-tab-pane label="底图" name="second">
+                <div style="margin: 5px 0;">
+                    地图
+                </div>
+                <el-radio-group v-model="vData.rdoMapType.currentMap" @change="mapTypeChange" class="block map-maptypes-list">
+                    <el-radio-button :label="map.id" v-for="map in vData.rdoMapType.MapTypes" v-if="map.type=='map'||map.type=='phys'||map.type=='sate'" :key="map.id">
+                        <div><img :src="map.pic"></div>
+                        <div>{{map.label}}</div>
+                    </el-radio-button>
+                </el-radio-group>
+                <div style="margin: 5px 0;">
+                    标注
+                    <!--<el-checkbox label="LabelLayerCheck" v-model="vData.rdoMapType.labelShow" @change="layerCheckChange">标注</el-checkbox>-->
+                </div>
+                <el-radio-group v-model="vData.rdoMapType.currentLabel" @change="mapLabelChange" class="block map-maptypes-list">
+                    <el-radio-button :label="map.id" v-for="map in vData.rdoMapType.MapTypes" v-if="map.type=='label'" :key="map.id">
+                        <div><img :src="map.pic"></div>
+                        <div>{{map.label}}</div>
+                    </el-radio-button>
+                </el-radio-group>
+
+                <div style="margin: 15px 0;display:none;">二维/三维</div>
+                <el-radio-group v-model="vData.rdoMapType.current23D" @change="map23DChange" class="map-maptypes-list" style="display:none;">
+                    <el-radio-button :label="map.id" v-for="map in vData.rdoMapType.MapTypes" v-if="map.type=='23d'" :key="map.id">
+                        <div>{{map.label}}</div>
+                    </el-radio-button>
+                </el-radio-group>
+                <el-checkbox style="display:none;" label="PanLink23DCheck" v-model="vData.rdoMapType.panLink23D" @change="layerCheckChange">联动（未实现）</el-checkbox>
+
+                <div style="margin: 15px 0;display:none;">其他</div>
+                <el-checkbox-group style="display:none;" v-model="vData.rdoMapType.currentGrid" @change="mapGridChange" class="map-maptypes-list">
+                    <el-checkbox :label="map.id" v-for="map in vData.rdoMapType.MapTypes" v-if="map.type=='grid'" :key="map.id">{{map.label}}</el-checkbox>
+                </el-checkbox-group>
+            </el-tab-pane>
+
+        </el-tabs>
+    </div>
+</div>
+
+
+<div class="map_popup quan" id="currentCityInfo" style="display: none;">
+    <div class="popup_main">
+        <div class="title">城市列表</div>
+        <div class="content" style="height: 369px; overflow: hidden;">
+            <div class="sel_city blueC">
+                <div style="_width: 100%;">
+                    <div class="sel_city_default" style="display: block;">
+                        <p id="CurCityInfo">
+                        </p>
+                        <p class="default_info" style="display: none;" id="DefCityInfo">
+                            <!-- 您默认的城市是：<a href="javascript:void(0);"
+                                onclick="SelectCityInst.selDefCity( '58 ', '沈阳市 ');return false;">沈阳市</a><span>[<a
+                                href="javascript:void(0);"
+                                onclick="SelectCityInst.delDefCity( '沈阳市 ');return false;">删除</a>]</span> -->
+                        </p>
+                    </div>
+                    <div class="sel-city-hotcity" style="display: none;">
+                        <a href="javascript:void(0)" class="search_nation">在全国范围内检索</a>
+                    </div>
+                    <div class="sel-city-hotcity" id="selCityHotCityId">
+                    </div>
+                    <div class="sel-city-searchbar">
+                        <div class="btnbar">
+                            <span id="selCityProvince" href="javascript:void(0)" tid="selCityProvince" class="sel-city-btnl sel-city-btnl-sel" onclick="selByPC(0);">按省份</span>
+                            <span id="selCityCity" href="javascript:void(0)" tid="selCityCity" class="sel-city-btnr" onclick="selByPC(1);">按城市</span>
+                        </div>
+                        <form onsubmit="SelectCityInst.search(this);return false">
+                            <input id="selCityCityWd" type="text" tid="selCitySearchInput" class="sel-city-searchinput" name="wd" value="输入城市名" style="color: gray; width: 80px;" onfocus="javascript:document.getElementById( 'selCityCityWd ').value=' '
+                   " autocomplete="off">
+                            <span id="selCitySubmit" tid="selCitySubmit" class="sel-city-btn-submit" onclick="searchCity();">搜索</span>
+                            <div id="selCityInfo" class="sel-city-tip">请输入正确的城市名</div>
+                        </form>
+                        <div id="associationalDivId"></div>
+                    </div>
+                    <div class="sel-city-letterbar" id="selCityLetterListIdP">
+                    </div>
+                    <div class="sel-city-letterbar" id="selCityLetterListIdC">
+                    </div>
+                    <div style="border-top: 1px solid #CCC; padding-bottom: 10px;"></div>
+                </div>
+                <div class="selCityPlaceList selCityPlaceListId" style="width: 100%; height: 149px;" id="selCityPlaceListIdP">
+                </div>
+                <div class="selCityPlaceList selCityPlaceListId" style="width: 100%; height: 149px;" id="selCityPlaceListIdC">
+                </div>
+            </div>
+        </div>
+        <button id="popup_close" onclick="currentCitySpanClick( 'block ');" title="关闭"></button>
+    </div>
+    <div class="poput_shadow" style="height: 393px;"></div>
+</div>
+<!--状态栏-->
+<div class="map-statusbar" id="" v-cloak>
+    <!--带事件-->
+    <el-popover ref="popover1" placement="top-start" title="" width="200" trigger="hover" content="<b>这是一段内容,这是一段内容,</b>这是一段内容,这是一段内容。">
+    </el-popover>
+    <el-row :gutter="3">
+        <el-col :span="10">
+            <div class="grid-content bg-purple" v-popover:popover1>
+                中心坐标：{{vData.x}} , {{vData.y}}
+                <!--<div id='coordicate '>{{vData.x}} , {{vData.y}}</div>-->
+            </div>
+        </el-col>
+        <el-col :span="5">
+            <div class="grid-content bg-purple">比例尺：1:{{vData.scale}}</div>
+        </el-col>
+        <el-col :span="3">
+            <div class="grid-content bg-purple" style="text-align: center;">层级：{{vData.level}}</div>
+        </el-col>
+        <el-col :span="6">
+            <div class="grid-content bg-purple" style="text-align:right;">
+                图源：{{vData.mapType}}
+            </div>
+        </el-col>
+        <!--<el-col :span="4">
+            <div class="grid-content bg-purple">
+                |时间：{{vData.mapDate}}
+            </div>
+        </el-col>-->
+    </el-row>
+
+</div>
+<div id="mapDiv">
+    <!--<div id="mapContainer" class="mapContainer" v-show="vData.rdoMapType.current2DVisible">22222DDDDD</div>
+    <div id="mapContainer2" class="mapContainer" v-show="vData.rdoMapType.current3DVisible">33333DDDDD</div>-->
+    <div v-show="vData.rdoMapType.current23D===101">
+        <div id="mapContainer" class="mapContainer" style="display:none;"></div>
+    </div>
+    <div v-show="vData.rdoMapType.current23D===102">
+        <div id="mapContainer2" class="mapContainer2" style="display:none;">33333DDDDD</div>
+    </div>
+    <div id="tip"></div>
+</div>
+</body>
+
+<script type="text/javascript">
+    var bodyHeight = 0
+
+    function adjustHeight() {
+        if (document.body) {
+            bodyHeight = document.body.clientHeight;
+        } else {
+            bodyHeight = document.documentElement.clientHeight;
+        }
+        var searchHeight = 68;
+    }
+    // adjustHeight();
+</script>
+
+</html>
