@@ -1,0 +1,5 @@
+.nav_a{
+    position: relative;display: inline-block;font-size: 18px;text-align: right;
+    text-decoration: none;color: #333;margin: 0 5px;padding: 0 8px;
+    font-family: '微软雅黑, Arial, Helvetica, sans-serif';
+}
